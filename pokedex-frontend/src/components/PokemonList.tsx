@@ -12,6 +12,8 @@ import {
   Tab,
   Pagination,
   CircularProgress,
+  Button,
+  Box,
 } from "@mui/material";
 import usePokemons from "../hooks/usePokemons";
 
@@ -45,13 +47,14 @@ const PokemonList = () => {
         page: 1,
         filterType: "",
         sortOrder: "asc",
+        limit: 5,
       });
     } else {
       updateQueryParams({ view: newValue, page: 1 });
     }
   };
 
-  const { pokemons, paginationData, loading, refetch } = usePokemons(
+  const { pokemons, paginationData, loading, getCaptured } = usePokemons(
     page,
     limit,
     sortOrder as "asc" | "desc",
@@ -68,72 +71,88 @@ const PokemonList = () => {
         </Tabs>
       </Typography>
 
-      {/* Filter by Type */}
-      <FormControl
-        variant="outlined"
-        style={{ marginBottom: "16px", width: "200px" }}
-      >
-        <InputLabel>Filter by Type</InputLabel>
-        <Select
-          value={filterType}
-          onChange={(e) =>
-            updateQueryParams({ filterType: e.target.value, page: 1 })
+      <Box display="flex" alignItems="center" gap={2} flexWrap="wrap" mb={2}>
+        {/* Filter by Type */}
+        <FormControl variant="outlined" style={{ width: "200px" }}>
+          <InputLabel>Filter by Type</InputLabel>
+          <Select
+            value={filterType}
+            onChange={(e) =>
+              updateQueryParams({ filterType: e.target.value, page: 1 })
+            }
+            label="Filter by Type"
+          >
+            <MenuItem value="">All Types</MenuItem>
+            <MenuItem value="fire">Fire</MenuItem>
+            <MenuItem value="water">Water</MenuItem>
+            <MenuItem value="grass">Grass</MenuItem>
+            <MenuItem value="normal">Normal</MenuItem>
+            <MenuItem value="electric">Electric</MenuItem>
+            <MenuItem value="ice">Ice</MenuItem>
+            <MenuItem value="fighting">Fighting</MenuItem>
+            <MenuItem value="poison">Poison</MenuItem>
+            <MenuItem value="ground">Ground</MenuItem>
+            <MenuItem value="flying">Flying</MenuItem>
+            <MenuItem value="psychic">Psychic</MenuItem>
+            <MenuItem value="bug">Bug</MenuItem>
+            <MenuItem value="rock">Rock</MenuItem>
+            <MenuItem value="ghost">Ghost</MenuItem>
+            <MenuItem value="dragon">Dragon</MenuItem>
+            <MenuItem value="dark">Dark</MenuItem>
+            <MenuItem value="steel">Steel</MenuItem>
+            <MenuItem value="fairy">Fairy</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl variant="outlined" style={{ width: "200px" }}>
+          <InputLabel>Sort by Number</InputLabel>
+          <Select
+            value={sortOrder}
+            id="sortOrder"
+            onChange={(e) =>
+              updateQueryParams({ sortOrder: e.target.value, page: 1 })
+            }
+            label="Sort by Number"
+          >
+            <MenuItem value="asc">Ascending</MenuItem>
+            <MenuItem value="desc">Descending</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl variant="outlined" style={{ width: "200px" }}>
+          <InputLabel>Items per page</InputLabel>
+          <Select
+            value={limit}
+            onChange={(e) => updateQueryParams({ limit: e.target.value })}
+            label="Items per page"
+          >
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() =>
+            updateQueryParams({
+              view: view,
+              page: 1,
+              filterType: "",
+              sortOrder: "asc",
+              limit: 5,
+            })
           }
-          label="Filter by Type"
+          sx={{
+            fontFamily: "'Press Start 2P', cursive",
+            fontSize: "10px",
+            minWidth: "35px",
+          }}
         >
-          <MenuItem value="">All Types</MenuItem>
-          <MenuItem value="fire">Fire</MenuItem>
-          <MenuItem value="water">Water</MenuItem>
-          <MenuItem value="grass">Grass</MenuItem>
-          <MenuItem value="normal">Normal</MenuItem>
-          <MenuItem value="electric">Electric</MenuItem>
-          <MenuItem value="ice">Ice</MenuItem>
-          <MenuItem value="fighting">Fighting</MenuItem>
-          <MenuItem value="poison">Poison</MenuItem>
-          <MenuItem value="ground">Ground</MenuItem>
-          <MenuItem value="flying">Flying</MenuItem>
-          <MenuItem value="psychic">Psychic</MenuItem>
-          <MenuItem value="bug">Bug</MenuItem>
-          <MenuItem value="rock">Rock</MenuItem>
-          <MenuItem value="ghost">Ghost</MenuItem>
-          <MenuItem value="dragon">Dragon</MenuItem>
-          <MenuItem value="dark">Dark</MenuItem>
-          <MenuItem value="steel">Steel</MenuItem>
-          <MenuItem value="fairy">Fairy</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl
-        variant="outlined"
-        style={{ marginBottom: "16px", width: "200px" }}
-      >
-        <InputLabel>Sort by Number</InputLabel>
-        <Select
-          value={sortOrder}
-          id="sortOrder"
-          onChange={(e) =>
-            updateQueryParams({ sortOrder: e.target.value, page: 1 })
-          }
-          label="Sort by Number"
-        >
-          <MenuItem value="asc">Ascending</MenuItem>
-          <MenuItem value="desc">Descending</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl variant="outlined" style={{ width: "200px" }}>
-        <InputLabel>Items per page</InputLabel>
-        <Select
-          value={limit}
-          onChange={(e) => updateQueryParams({ limit: e.target.value })}
-          label="Items per page"
-        >
-          <MenuItem value={5}>5</MenuItem>
-          <MenuItem value={10}>10</MenuItem>
-          <MenuItem value={20}>20</MenuItem>
-        </Select>
-      </FormControl>
-
+          x
+        </Button>
+      </Box>
       {/* Pokémon Cards */}
       {loading ? (
         <div
@@ -148,11 +167,31 @@ const PokemonList = () => {
         </div>
       ) : (
         <Grid container spacing={2}>
-          {pokemons.map((pokemon: any) => (
-            <Grid item key={pokemon.name} xs={12} sm={6} md={4}>
-              <PokemonCard pokemon={pokemon} refetch={refetch} view={view} />
+          {pokemons.length > 0 ? (
+            pokemons.map((pokemon: any) => (
+              <Grid item key={pokemon.name} xs={12} sm={6} md={4}>
+                <PokemonCard
+                  pokemon={pokemon}
+                  getCaptured={getCaptured}
+                  view={view}
+                />
+              </Grid>
+            ))
+          ) : (
+            <Grid
+              item
+              xs={12}
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                marginBottom: "20px",
+              }}
+            >
+              <Typography variant="h6" mt={8}>
+                No Pokémon found...
+              </Typography>
             </Grid>
-          ))}
+          )}
         </Grid>
       )}
 

@@ -10,7 +10,6 @@ from services.pokemon_service import (
 
 
 def generate_etag(data):
-    """Generate an ETag based on the data."""
     return hashlib.md5(str(data).encode("utf-8")).hexdigest()
 
 
@@ -54,7 +53,6 @@ def capture():
 
 @pokemon_api.route("/pokemon/captured", methods=["GET"])
 def captured_pokemon():
-    """Returns all captured Pokémon."""
     captured_pokemon = get_captured_pokemon()
     pokemon_list = get_filtered_pokemon(request.args, data=captured_pokemon)
     pokemon_list, total_count, total_pages = get_filtered_pokemon(

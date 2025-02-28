@@ -59,7 +59,7 @@ def get_filtered_pokemon(params, data=None):
 
 def capture_pokemon(data):
     try:
-        pokemon_unique_id = f'{str(data["name"]).lower()}-{data["id"]}'
+        pokemon_unique_id = f'{data["id"]}'
         captured_pokemon.add(pokemon_unique_id)
         return True, f'Pokémon {data["name"]} captured!'
     except (KeyError, ValueError):
@@ -71,7 +71,7 @@ def get_captured_pokemon():
     captured = []
 
     for p in data:
-        identifier = f'{p["name"].lower()}-{p["number"]}'
+        identifier = f'{p["number"]}'
 
         if identifier in captured_pokemon:
             captured.append(p)

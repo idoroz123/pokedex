@@ -1,5 +1,4 @@
 from flask import Flask, jsonify
-from api.exceptions import PokedexError, handle_pokedex_error
 from api.pokemon_api import pokemon_api
 from flask_cors import CORS
 import db
