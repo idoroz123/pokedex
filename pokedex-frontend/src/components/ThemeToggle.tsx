@@ -13,14 +13,14 @@ const ThemeSwitch = styled(Switch)(({ theme }) => ({
     "&.Mui-checked": {
       transform: "translateX(24px)",
       "& + .MuiSwitch-track": {
-        backgroundColor: theme.palette.mode === "dark" ? "#ffd700" : "#333", // Gold for dark, dark gray for light
+        backgroundColor: theme.palette.mode === "dark" ? "#ffd700" : "#333",
       },
     },
   },
   "& .MuiSwitch-thumb": {
     width: 22,
     height: 22,
-    backgroundColor: theme.palette.mode === "dark" ? "#f57c00" : "#90caf9", // Orange for dark, blue for light
+    backgroundColor: theme.palette.mode === "dark" ? "#f57c00" : "#90caf9",
   },
   "& .MuiSwitch-track": {
     borderRadius: 26 / 2,

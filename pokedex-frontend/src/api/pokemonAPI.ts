@@ -21,11 +21,14 @@ export const fetchPokemons = async (
 };
 
 // Capture a Pokémon
-export const capturePokemon = async (pokemonId: number) => {
+export const capturePokemonRequest = async (
+  pokemonId: number,
+  pokemonName: string
+) => {
   try {
     const response = await axios.post(
       `${API_URL}/capture`,
-      { id: pokemonId },
+      { id: pokemonId, name: pokemonName },
       {
         headers: {
           "Content-Type": "application/json",

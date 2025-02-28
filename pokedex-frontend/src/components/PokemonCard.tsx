@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { Card, CardContent, Typography, Box, Button } from "@mui/material";
-import { capturePokemon } from "../api/pokemonAPI";
-import fireBackgroundImage from "../assets/fire_bg.jpg";
-import waterBackgroundImage from "../assets/water_bg.jpg";
-import { grey, lightGreen } from "@mui/material/colors";
+import { capturePokemonRequest } from "../api/pokemonAPI";
+import { usePokemonStore } from "../store/usePokemonStore";
 
 // Pokémon Props
 type PokemonProps = {
@@ -53,15 +50,20 @@ const typeColors: { [key: string]: string } = {
 };
 
 const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
-  const [captured, setCaptured] = useState(false);
+  const { capturePokemon, capturedPokemon } = usePokemonStore();
+  const pokemonId = pokemon
+    ? `${pokemon.name.toLowerCase()}-${pokemon.number}`
+    : "";
+  const isCaptured = pokemonId && capturedPokemon.has(pokemonId);
   const isMyPokemon = view === "my_pokemon";
-  const capturedText = view === "my_pokemon" ? "" : "Captured";
+  const capturedText = isMyPokemon ? "" : "Captured";
 
   const handleCapture = async () => {
     if (!pokemon) return;
     try {
-      await capturePokemon(pokemon.number);
-      setCaptured(true);
+      await capturePokemonRequest(pokemon.number, pokemon.name);
+      const pokemonId = `${pokemon.name.toLowerCase()}-${pokemon.number}`;
+      capturePokemon(pokemonId);
       refetch();
     } catch (error) {
       console.error("Capture failed:", error);
@@ -90,7 +92,6 @@ const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
         position: "relative",
       }}
     >
-      {/* Name and Number */}
       <Box
         sx={{
           display: "flex",
@@ -104,21 +105,15 @@ const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
       >
         <Typography
           sx={{
-            fontFamily: "'Press Start 2P', cursive",
             fontSize: "10px",
             fontWeight: "bold",
           }}
         >
           {pokemon?.name}
         </Typography>
-        <Typography
-          sx={{ fontFamily: "'Press Start 2P', cursive", fontSize: "10px" }}
-        >
-          #{pokemon?.number}
-        </Typography>
+        <Typography sx={{ fontSize: "10px" }}>#{pokemon?.number}</Typography>
       </Box>
 
-      {/* Pokémon Image */}
       <Box
         sx={{
           width: "100%",
@@ -141,7 +136,6 @@ const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
         />
       </Box>
 
-      {/* Pokémon Type */}
       <Box
         sx={{
           display: "flex",
@@ -176,7 +170,6 @@ const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
         )}
       </Box>
 
-      {/* Pokémon Stats */}
       <CardContent
         sx={{
           padding: "8px",
@@ -184,13 +177,11 @@ const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
         }}
       >
         <Box display="flex" justifyContent="space-between" textAlign="left">
-          {/* Left Column */}
           <Box>
             <Typography>HP: {pokemon?.hit_points}</Typography>
             <Typography>Attack: {pokemon?.attack}</Typography>
             <Typography>Defense: {pokemon?.defense}</Typography>
           </Box>
-          {/* Right Column */}
           <Box>
             <Typography>Sp. Attack: {pokemon?.special_attack}</Typography>
             <Typography>Sp. Defense: {pokemon?.special_defense}</Typography>
@@ -199,7 +190,6 @@ const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
         </Box>
       </CardContent>
 
-      {/* Total & Generation */}
       <Box
         sx={{
           display: "flex",
@@ -215,8 +205,7 @@ const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
         <Typography>Gen: {pokemon?.generation}</Typography>
       </Box>
 
-      {/* Capture Button */}
-      {!captured ? (
+      {!isCaptured && !isMyPokemon ? (
         <Button
           variant="contained"
           size="small"
@@ -232,13 +221,17 @@ const PokemonCard = ({ pokemon, refetch, view }: PokemonCardProps) => {
         >
           Capture!
         </Button>
-      ) : (
+      ) : !isMyPokemon ? (
         <Typography
-          sx={{ fontSize: "12px", color: "white", marginTop: "10px" }}
+          sx={{
+            fontFamily: "'Press Start 2P', cursive",
+            fontSize: "10px",
+            marginTop: "10px",
+          }}
         >
           {capturedText}
         </Typography>
-      )}
+      ) : null}
     </Card>
   );
 };

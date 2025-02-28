@@ -103,7 +103,6 @@ const PokemonList = () => {
         </Select>
       </FormControl>
 
-      {/* Sort by Number */}
       <FormControl
         variant="outlined"
         style={{ marginBottom: "16px", width: "200px" }}
@@ -122,7 +121,6 @@ const PokemonList = () => {
         </Select>
       </FormControl>
 
-      {/* Items per page */}
       <FormControl variant="outlined" style={{ width: "200px" }}>
         <InputLabel>Items per page</InputLabel>
         <Select
@@ -158,7 +156,6 @@ const PokemonList = () => {
         </Grid>
       )}
 
-      {/* Pagination */}
       {!loading && pokemons.length > 0 ? (
         <Pagination
           count={paginationData.total_pages}
@@ -172,9 +169,7 @@ const PokemonList = () => {
             justifyContent: "center",
           }}
         />
-      ) : (
-        ""
-      )}
+      ) : null}
     </div>
   );
 };
