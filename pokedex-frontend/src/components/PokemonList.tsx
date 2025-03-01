@@ -19,6 +19,39 @@ import {
 } from "@mui/material";
 import usePokemons from "../hooks/usePokemons";
 
+const typeOptions = [
+  { label: "All Types", value: "" },
+  { label: "Fire", value: "fire" },
+  { label: "Water", value: "water" },
+  { label: "Grass", value: "grass" },
+  { label: "Normal", value: "normal" },
+  { label: "Electric", value: "electric" },
+  { label: "Ice", value: "ice" },
+  { label: "Fighting", value: "fighting" },
+  { label: "Poison", value: "poison" },
+  { label: "Ground", value: "ground" },
+  { label: "Flying", value: "flying" },
+  { label: "Psychic", value: "psychic" },
+  { label: "Bug", value: "bug" },
+  { label: "Rock", value: "rock" },
+  { label: "Ghost", value: "ghost" },
+  { label: "Dragon", value: "dragon" },
+  { label: "Dark", value: "dark" },
+  { label: "Steel", value: "steel" },
+  { label: "Fairy", value: "fairy" },
+];
+
+const sortOptions = [
+  { label: "Ascending", value: "asc" },
+  { label: "Descending", value: "desc" },
+];
+
+const limitOptions = [
+  { label: "5", value: 5 },
+  { label: "10", value: 10 },
+  { label: "20", value: 20 },
+];
+
 const PokemonList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -47,39 +80,42 @@ const PokemonList = () => {
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     if (newValue === "my_pokemon") {
-      clearSearchParams();
       updateQueryParams({
         view: newValue,
         page: 1,
-        sortOrder: "asc",
         filterType: "",
+        sortOrder: "asc",
         limit: 10,
         query: "",
       });
     } else {
-      updateQueryParams({ view: newValue, page: 1 });
+      updateQueryParams({
+        view: newValue,
+        page: 1,
+      });
     }
   };
 
   const debounceQuery = useCallback(
     debounce((inputValue: string) => {
       updateQueryParams({
-        view: view,
+        view,
         page: 1,
-        filterType: filterType,
-        sortOrder: sortOrder,
-        limit: limit,
+        filterType,
+        sortOrder,
+        limit,
         query: inputValue,
       });
     }, 500),
-    [updateQueryParams]
+    [view, filterType, sortOrder, limit]
   );
 
   const handleSearchQuery = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const newInputValue = event.target.value;
       setSearchValue(newInputValue);
-      if (newInputValue.length >= 2 || !!newInputValue.length) {
+
+      if (newInputValue.length >= 2 || newInputValue === "") {
         debounceQuery(newInputValue);
       }
     },
@@ -126,25 +162,11 @@ const PokemonList = () => {
             }
             label="Filter by Type"
           >
-            <MenuItem value="">All Types</MenuItem>
-            <MenuItem value="fire">Fire</MenuItem>
-            <MenuItem value="water">Water</MenuItem>
-            <MenuItem value="grass">Grass</MenuItem>
-            <MenuItem value="normal">Normal</MenuItem>
-            <MenuItem value="electric">Electric</MenuItem>
-            <MenuItem value="ice">Ice</MenuItem>
-            <MenuItem value="fighting">Fighting</MenuItem>
-            <MenuItem value="poison">Poison</MenuItem>
-            <MenuItem value="ground">Ground</MenuItem>
-            <MenuItem value="flying">Flying</MenuItem>
-            <MenuItem value="psychic">Psychic</MenuItem>
-            <MenuItem value="bug">Bug</MenuItem>
-            <MenuItem value="rock">Rock</MenuItem>
-            <MenuItem value="ghost">Ghost</MenuItem>
-            <MenuItem value="dragon">Dragon</MenuItem>
-            <MenuItem value="dark">Dark</MenuItem>
-            <MenuItem value="steel">Steel</MenuItem>
-            <MenuItem value="fairy">Fairy</MenuItem>
+            {typeOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
@@ -158,8 +180,11 @@ const PokemonList = () => {
             }
             label="Sort by Number"
           >
-            <MenuItem value="asc">Ascending</MenuItem>
-            <MenuItem value="desc">Descending</MenuItem>
+            {sortOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
@@ -170,9 +195,11 @@ const PokemonList = () => {
             onChange={(e) => updateQueryParams({ limit: e.target.value })}
             label="Items per page"
           >
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={20}>20</MenuItem>
+            {limitOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 

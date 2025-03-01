@@ -119,9 +119,6 @@ const PokemonCard = ({ pokemon, view }: PokemonCardProps) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          // backgroundImage: `url(${backgroundImages[pokemon?.type_one.toLowerCase() || "default"]})`, // Using the imported image
-          // backgroundSize: "cover", // Ensures the image covers the whole box
-          // backgroundPosition: "center", // Centers the image
           backgroundColor: "lightgrey",
           borderRadius: "8px",
           marginTop: "10px",

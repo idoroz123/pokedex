@@ -16,7 +16,7 @@ def handle_edge_cases(name: str, edge_cases: dict) -> str:
 
 
 def format_labels(name: str) -> str:
-    size_pattern = r"([A-Za-z]+)(Small Size|Large Size|Super Size|Average Size|Incarnate Forme|Therian Forme|Normal Forme|Attack Forme|Defense Forme|Speed Forme|50% Forme|Zen Mode|Aria Forme|Pirouette Forme|Ordinary Forme|Resolute Forme|Black Kyurem|White Kyurem|Altered Forme)"
+    size_pattern = r"([A-Za-z]+)(Small Size|Large Size|Super Size|Average Size|Incarnate Forme|Therian Forme|Normal Forme|Attack Forme|Defense Forme|Speed Forme|50% Forme|Zen Mode|Aria Forme|Pirouette Forme|Ordinary Forme|Resolute Forme|Black Kyurem|White Kyurem|Altered Forme|Sandy Cloak)"
     return re.sub(size_pattern, r"\1 (\2)", name)
 
 
