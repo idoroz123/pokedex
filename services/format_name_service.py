@@ -5,7 +5,7 @@ EDGE_CASES = {
     "Mime Jr.": {"name": "Mime Jr.", "image_name": "mime-jr"},
     "Farfetch'd": {"name": "Farfetch'd", "image_name": "farfetchd"},
     "HoopaHoopa Confined": {"name": "Hoopa Confined", "image_name": "hoopa-confined"},
-    "HoopaHoopa Unbound": {"name": "Hoopa Confined", "image_name": "hoopa-unbound"},
+    "HoopaHoopa Unbound": {"name": "Hoopa Unbound", "image_name": "hoopa-unbound"},
 }  # Edge cases for Pokémon names
 
 

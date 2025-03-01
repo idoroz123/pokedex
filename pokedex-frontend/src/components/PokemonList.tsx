@@ -32,35 +32,27 @@ const PokemonList = () => {
   const [searchValue, setSearchValue] = useState(searchQuery);
 
   const updateQueryParams = (newParams: Record<string, string | number>) => {
-    const updatedParams = new URLSearchParams({
-      ...Object.fromEntries(searchParams),
-      ...Object.entries(newParams).reduce(
-        (acc, [key, value]) => {
-          acc[key] = String(value);
-          return acc;
-        },
-        {} as Record<string, string>
-      ),
+    const updatedParams = new URLSearchParams(searchParams);
+    Object.entries(newParams).forEach(([key, value]) => {
+      updatedParams.set(key, String(value));
     });
     setSearchParams(updatedParams);
   };
 
   const clearSearchParams = () => {
     // we clear all except for the view
-    ["page", "sortOrder", "filterType", "limit", "query"].forEach((param) =>
-      searchParams.delete(param)
-    );
-    setSearchParams(searchParams);
+    setSearchParams({ view });
     setSearchValue("");
   };
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     if (newValue === "my_pokemon") {
+      clearSearchParams();
       updateQueryParams({
         view: newValue,
         page: 1,
-        filterType: "",
         sortOrder: "asc",
+        filterType: "",
         limit: 10,
         query: "",
       });
@@ -87,14 +79,14 @@ const PokemonList = () => {
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const newInputValue = event.target.value;
       setSearchValue(newInputValue);
-      if (newInputValue.length >= 2) {
+      if (newInputValue.length >= 2 || !!newInputValue.length) {
         debounceQuery(newInputValue);
       }
     },
     [debounceQuery]
   );
 
-  const { pokemons, paginationData, loading, getCaptured } = usePokemons(
+  const { pokemonData, paginationData, loading } = usePokemons(
     page,
     limit,
     sortOrder as "asc" | "desc",
@@ -211,8 +203,8 @@ const PokemonList = () => {
         </div>
       ) : (
         <Grid container spacing={2}>
-          {pokemons.length > 0 ? (
-            pokemons.map((pokemon: any) => (
+          {pokemonData?.length > 0 ? (
+            pokemonData.map((pokemon: any) => (
               <Grid item key={pokemon.name} xs={12} sm={6} md={4}>
                 <PokemonCard pokemon={pokemon} view={view} />
               </Grid>
@@ -235,7 +227,7 @@ const PokemonList = () => {
         </Grid>
       )}
 
-      {!loading && pokemons.length > 0 ? (
+      {!loading && pokemonData?.length > 0 ? (
         <Pagination
           count={paginationData.total_pages}
           page={page}
