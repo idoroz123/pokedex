@@ -1,4 +1,5 @@
 import math
+from rapidfuzz import process
 from cache import get_pokemon_data
 from services.format_name_service import format_pokemon_name
 
@@ -21,6 +22,7 @@ def format_pokemon_names(data):
         formatted_name, image_name = format_pokemon_name(p["name"])
         p["name"] = formatted_name
         p["image_name"] = image_name
+        p["number_str"] = str(p["number"])
 
 
 def paginate_data(data, limit, page):
@@ -45,7 +47,30 @@ def get_filtered_pokemon(params, data=None):
     sort_order = params.get("sort", "asc").lower()
     data = sort_data(data, sort_order)
 
+    # Format Names
     format_pokemon_names(data)
+
+    # Search
+    query = str(params.get("query", "")).strip()
+    if query:
+        query = str(query).lower()
+
+        # Create a mapping where keys are lowercase Pokémon names and Pokémon types
+        pokemon_search_map = {
+            str(p["name"]).lower()
+            + " "
+            + str(p["type_one"]).lower()
+            + " "
+            + str(p["type_two"]).lower()
+            + " ": p
+            for p in data
+        }
+
+        results = process.extract(
+            query, pokemon_search_map.keys(), limit=10, score_cutoff=60
+        )
+
+        data = [pokemon_search_map[result[0]] for result in results]
 
     # Pagination
     try:
@@ -59,7 +84,7 @@ def get_filtered_pokemon(params, data=None):
 
 def capture_pokemon(data):
     try:
-        pokemon_unique_id = f'{data["id"]}'
+        pokemon_unique_id = f'{str(data["name"]).lower()}-{data["id"]}'
         captured_pokemon.add(pokemon_unique_id)
         return True, f'Pokémon {data["name"]} captured!'
     except (KeyError, ValueError):
@@ -71,9 +96,9 @@ def get_captured_pokemon():
     captured = []
 
     for p in data:
-        identifier = f'{p["number"]}'
+        pokemon_unique_id = f'{str(p["name"]).lower()}-{p["number"]}'
 
-        if identifier in captured_pokemon:
+        if pokemon_unique_id in captured_pokemon:
             captured.append(p)
 
     return captured

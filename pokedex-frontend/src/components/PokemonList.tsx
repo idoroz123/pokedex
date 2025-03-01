@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PokemonCard from "./PokemonCard";
+import debounce from "lodash/debounce";
 import {
   FormControl,
   InputLabel,
@@ -14,6 +15,7 @@ import {
   CircularProgress,
   Button,
   Box,
+  TextField,
 } from "@mui/material";
 import usePokemons from "../hooks/usePokemons";
 
@@ -23,8 +25,11 @@ const PokemonList = () => {
   const page = Number(searchParams.get("page")) || 1;
   const sortOrder = searchParams.get("sortOrder") || "asc";
   const filterType = searchParams.get("filterType") || "";
-  const limit = Number(searchParams.get("limit")) || 5;
+  const limit = Number(searchParams.get("limit")) || 10;
   const view = searchParams.get("view") || "all";
+  const searchQuery = searchParams.get("query") || "";
+
+  const [searchValue, setSearchValue] = useState(searchQuery);
 
   const updateQueryParams = (newParams: Record<string, string | number>) => {
     const updatedParams = new URLSearchParams({
@@ -40,6 +45,15 @@ const PokemonList = () => {
     setSearchParams(updatedParams);
   };
 
+  const clearSearchParams = () => {
+    // we clear all except for the view
+    ["page", "sortOrder", "filterType", "limit", "query"].forEach((param) =>
+      searchParams.delete(param)
+    );
+    setSearchParams(searchParams);
+    setSearchValue("");
+  };
+
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     if (newValue === "my_pokemon") {
       updateQueryParams({
@@ -47,19 +61,46 @@ const PokemonList = () => {
         page: 1,
         filterType: "",
         sortOrder: "asc",
-        limit: 5,
+        limit: 10,
+        query: "",
       });
     } else {
       updateQueryParams({ view: newValue, page: 1 });
     }
   };
 
+  const debounceQuery = useCallback(
+    debounce((inputValue: string) => {
+      updateQueryParams({
+        view: view,
+        page: 1,
+        filterType: filterType,
+        sortOrder: sortOrder,
+        limit: limit,
+        query: inputValue,
+      });
+    }, 500),
+    [updateQueryParams]
+  );
+
+  const handleSearchQuery = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const newInputValue = event.target.value;
+      setSearchValue(newInputValue);
+      if (newInputValue.length >= 2) {
+        debounceQuery(newInputValue);
+      }
+    },
+    [debounceQuery]
+  );
+
   const { pokemons, paginationData, loading, getCaptured } = usePokemons(
     page,
     limit,
     sortOrder as "asc" | "desc",
     filterType,
-    view
+    view,
+    searchQuery
   );
 
   return (
@@ -71,7 +112,18 @@ const PokemonList = () => {
         </Tabs>
       </Typography>
 
+      {/* Search */}
       <Box display="flex" alignItems="center" gap={2} flexWrap="wrap" mb={2}>
+        <FormControl variant="outlined" style={{ width: "400px" }}>
+          <TextField
+            id="search"
+            label="Search"
+            variant="outlined"
+            value={searchValue}
+            onChange={handleSearchQuery}
+          />
+        </FormControl>
+
         {/* Filter by Type */}
         <FormControl variant="outlined" style={{ width: "200px" }}>
           <InputLabel>Filter by Type</InputLabel>
@@ -135,15 +187,7 @@ const PokemonList = () => {
         <Button
           variant="outlined"
           size="small"
-          onClick={() =>
-            updateQueryParams({
-              view: view,
-              page: 1,
-              filterType: "",
-              sortOrder: "asc",
-              limit: 5,
-            })
-          }
+          onClick={clearSearchParams}
           sx={{
             fontFamily: "'Press Start 2P', cursive",
             fontSize: "10px",
@@ -170,11 +214,7 @@ const PokemonList = () => {
           {pokemons.length > 0 ? (
             pokemons.map((pokemon: any) => (
               <Grid item key={pokemon.name} xs={12} sm={6} md={4}>
-                <PokemonCard
-                  pokemon={pokemon}
-                  getCaptured={getCaptured}
-                  view={view}
-                />
+                <PokemonCard pokemon={pokemon} view={view} />
               </Grid>
             ))
           ) : (

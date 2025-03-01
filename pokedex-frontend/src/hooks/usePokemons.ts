@@ -6,7 +6,8 @@ const usePokemons = (
   limit: number,
   sortOrder: "asc" | "desc",
   filterType: string,
-  view: string
+  view: string,
+  searchQuery: string
 ) => {
   const [paginationData, setPagination] = useState<any>({});
   const [pokemons, setPokemons] = useState<any[]>([]);
@@ -21,7 +22,8 @@ const usePokemons = (
         page,
         limit,
         sortOrder,
-        filterType
+        filterType,
+        searchQuery
       );
       setMyPokemons(data.pokemon);
       setPagination(data.pagination);
@@ -35,7 +37,13 @@ const usePokemons = (
   const getAllPokemon = async () => {
     setLoading(true);
     try {
-      const data = await fetchPokemons(page, limit, sortOrder, filterType);
+      const data = await fetchPokemons(
+        page,
+        limit,
+        sortOrder,
+        filterType,
+        searchQuery
+      );
       setPokemons(data.pokemon);
       setPagination(data.pagination);
     } catch (err) {
@@ -63,7 +71,7 @@ const usePokemons = (
     };
 
     loadPokemons();
-  }, [page, limit, sortOrder, filterType, view]);
+  }, [page, limit, sortOrder, filterType, view, searchQuery]);
 
   return {
     pokemons: view === "my_pokemon" ? myPokemons : pokemons,

@@ -23,7 +23,6 @@ type PokemonProps = {
 
 type PokemonCardProps = {
   pokemon?: PokemonProps;
-  getCaptured: () => void;
   view: string;
 };
 
@@ -49,7 +48,7 @@ const typeColors: { [key: string]: string } = {
   default: "#A8A8A8",
 };
 
-const PokemonCard = ({ pokemon, getCaptured, view }: PokemonCardProps) => {
+const PokemonCard = ({ pokemon, view }: PokemonCardProps) => {
   const { capturePokemon, capturedPokemon } = usePokemonStore();
   const pokemonId = pokemon
     ? `${pokemon.name.toLowerCase()}-${pokemon.number}`

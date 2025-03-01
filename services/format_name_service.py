@@ -2,7 +2,10 @@ import re
 
 EDGE_CASES = {
     "Mr. Mime": {"name": "Mr. Mime", "image_name": "mr-mime"},
+    "Mime Jr.": {"name": "Mime Jr.", "image_name": "mime-jr"},
     "Farfetch'd": {"name": "Farfetch'd", "image_name": "farfetchd"},
+    "HoopaHoopa Confined": {"name": "Hoopa Confined", "image_name": "hoopa-confined"},
+    "HoopaHoopa Unbound": {"name": "Hoopa Confined", "image_name": "hoopa-unbound"},
 }  # Edge cases for Pokémon names
 
 
@@ -13,7 +16,7 @@ def handle_edge_cases(name: str, edge_cases: dict) -> str:
 
 
 def format_labels(name: str) -> str:
-    size_pattern = r"([A-Za-z]+)(Small Size|Large Size|Super Size|Average Size|Incarnate Forme|Therian Forme|Normal Forme|Attack Forme|Defense Forme|Speed Forme|50% Forme|Zen Mode|Aria Forme|Pirouette Forme|Ordinary Forme|Resolute Forme|Black Kyurem|White Kyurem)"
+    size_pattern = r"([A-Za-z]+)(Small Size|Large Size|Super Size|Average Size|Incarnate Forme|Therian Forme|Normal Forme|Attack Forme|Defense Forme|Speed Forme|50% Forme|Zen Mode|Aria Forme|Pirouette Forme|Ordinary Forme|Resolute Forme|Black Kyurem|White Kyurem|Altered Forme)"
     return re.sub(size_pattern, r"\1 (\2)", name)
 
 
@@ -44,20 +47,19 @@ def handle_xy_image_name(image_name: str) -> str:
 def format_pokemon_name(name: str) -> str:
 
     name, image_name = handle_edge_cases(name, EDGE_CASES)
-    if image_name is not None:
-        return name, image_name
+    if image_name is None:
 
-    name = format_labels(name)
+        name = format_labels(name)
 
-    name = format_mega_name(name)
+        name = format_mega_name(name)
 
-    name = remove_duplicate_name(name)
+        name = remove_duplicate_name(name)
 
-    image_name = generate_image_name(name)
+        image_name = generate_image_name(name)
 
-    image_name = transform_pokemon_name_single_name_with_mega(image_name)
+        image_name = transform_pokemon_name_single_name_with_mega(image_name)
 
-    image_name = handle_xy_image_name(image_name)
+        image_name = handle_xy_image_name(image_name)
 
     return name, image_name
 

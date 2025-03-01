@@ -7,11 +7,12 @@ export const fetchPokemons = async (
   page: number,
   limit: number,
   sort: "asc" | "desc",
-  type: string
+  type: string,
+  query: string
 ) => {
   try {
     const response = await axios.get(API_URL, {
-      params: { page, limit, sort, type },
+      params: { page, limit, sort, type, query },
     });
     return response.data;
   } catch (error) {
@@ -47,11 +48,12 @@ export const getCapturedPokemons = async (
   page: number,
   limit: number,
   sort: "asc" | "desc",
-  type: string
+  type: string,
+  query: string
 ) => {
   try {
     const response = await axios.get(`${API_URL}/captured`, {
-      params: { page, limit, sort, type },
+      params: { page, limit, sort, type, query },
     });
     return response.data;
   } catch (error) {
